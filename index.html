@@ -1,1 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>自作クイズ</title>
+  <script src="papaparse.min.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 20px; text-align: center; }
+    .card { border: 1px solid #ccc; padding: 20px; width: 80%; max-width: 500px; margin: auto; border-radius: 10px; }
+    button { margin-top: 15px; padding: 10px 20px; }
+  </style>
+</head>
+<body>
+
+  <h1>クイズに挑戦！</h1>
+
+  <div class="card">
+    <div id="quiz-question">読み込み中...</div>
+    <div id="quiz-answer" style="margin-top: 10px; font-weight: bold;"></div>
+    <button onclick="showRandomQuiz()">次のクイズ</button>
+  </div>
+
+  <script>
+    let quizzes = [];
+
+    function showRandomQuiz() {
+      if (quizzes.length === 0) return;
+      const quiz = quizzes[Math.floor(Math.random() * quizzes.length)];
+      document.getElementById('quiz-question').textContent = quiz["問題"];
+      document.getElementById('quiz-answer').textContent = quiz["答え"];
+    }
+
+    // CSVファイル読み込み
+    Papa.parse("quiz.csv", {
+      header: true,
+      download: true,
+      complete: function(results) {
+        quizzes = results.data.filter(q => q["問題"] && q["答え"]);
+        showRandomQuiz();
+      },
+      error: function(err) {
+        document.getElementById('quiz-question').textContent = "CSVの読み込みに失敗しました。";
+      }
+    });
+  </script>
+
+</body>
+</html>
 
